@@ -70,9 +70,37 @@ formula = ["BaTiO3","SrTiO3","CaTiO3", "LaMnO3", "BiFeO3", "SmFeO3", "PbTiO3",  
                 , "BaTaO3", "CaMoO3", "SrMoO3", "BaMoO3", "CaWO3", "SrWO3", "BaWO3", "NdMnO3", "PrMnO3", "SmMnO3", "GdMnO3", "TbFeO3", "ErFeO3", "YbFeO3"
                 , "CsGeI3", "CsGeBr3", "CsGeCl3", "MaSnCl3", "FASnBr3", "LaCuO3","CaCuO3", "SrCuO3", "BaPbO3", "SrIrO3", "CaIrO3", "ZnO", "AgO", "CdSe"]
 
-
+'''
 if create_material == True:
     material_data(pkl_opt, xlsx_opt, vasp_opt, formula)
 
 if pkltoexcel_opt == True:
     pkltoexcel()
+'''
+
+# **TMS 2025 AI Workshop: Ryan Jacobs, Ben Afflerbach, Dane Morgan (UW-Madison)**
+
+
+# **TMS 2025 AI Workshop: Ryan Jacobs, Ben Afflerbach, Dane Morgan (UW-Madison)*
+## Google Colab notebook demo of structure based property prediction:
+## Fine tuning for prediction Na-battery material voltage
+
+# Part 1: Installation and setup
+
+# To begin, we need to install needed python dependencies to run [ALIGNN](https://github.com/usnistgov/alignn)
+
+# pip install alignn
+
+# pip install pymatgen mp_api
+
+# Part 2: Training and Predicting using sample POSCAR data
+
+# ALIGNN github package comes with an example dataset. let's do a quick test with that to check things are working and installed correctly
+
+# The example data we'll work with is configured as a directory of POSCAR files. Additionally it must contain a file "id_prop.csv" which is a two two column csv with file names matching the POSCAR files paired with the property value of interest. The example dataset is a set of Band Gap values.
+
+# The last file in the sample data folder is config_example.json
+
+# This configuration file sets various aspects of the dataset from model architecture details, to training parameters.
+
+# To interact with it I'll suggest double clicking from the file explorer on the left of the Google Colab interface to inspect and view directly rather than reading in the json file to Python

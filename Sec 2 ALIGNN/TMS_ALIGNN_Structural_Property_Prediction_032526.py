@@ -4,6 +4,20 @@ from pymatgen.core import Structure
 from pathlib import Path
 import pickle
 import joblib
+import os
+import torch
+from alignn.models.alignn_atomwise import ALIGNNAtomWise , ALIGNNAtomWiseConfig
+from jarvis.core.atoms import Atoms
+from alignn.graphs import Graph
+import joblib
+import pandas as pd
+import numpy as np
+import os
+from pymatgen.core import Structure, Composition
+import matplotlib.pyplot as plt
+import sys
+from jarvis.db.jsonutils import loadjson
+import pandas as pd
 
 def material_data(pkl_opt, xlsx_opt, vasp_opt, formula):
     #CREATE MATERIAL DATA
@@ -106,9 +120,9 @@ if pkltoexcel_opt == True:
 
 # To interact with it I'll suggest double clicking from the file explorer on the left of the Google Colab interface to inspect and view directly rather than reading in the json file to Python
 
-import torch
-from alignn.models.alignn_atomwise import ALIGNNAtomWise , ALIGNNAtomWiseConfig
+# To use the trained model we can load model checkpoints from the output directory
 
+data_directory = "/home/diegop/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data"
 output_directory = 'sample_test/'
 output_features =  1
 filename = os.path.join(output_directory,'best_model.pt')
@@ -116,10 +130,151 @@ device = "cpu"
 if torch.cuda.is_available():
     device = torch.device("cuda")
 
-from jarvis.db.jsonutils import loadjson
-# load config from output folder
-config=loadjson(os.path.join(output_directory,'config.json'))
+def use_trained_model():
+    from jarvis.db.jsonutils import loadjson
+    # load config from output folder
+    config=loadjson(os.path.join(output_directory,'config.json'))
 
-model = ALIGNNAtomWise(ALIGNNAtomWiseConfig(**config["model"]))
-model.load_state_dict(torch.load(filename, map_location=device))
-model.eval()
+    model = ALIGNNAtomWise(ALIGNNAtomWiseConfig(**config["model"]))
+    model.load_state_dict(torch.load(filename, map_location=device))
+    model.eval()
+    return model
+
+# To make predictions we load a POSCAR file and build a graph representation
+
+def graph_representation(model):
+    cutoff = 8.0
+    model=model.to(device)
+    max_neighbors = 12
+    # pick one of the sample data files for this quick demo
+    atoms = Atoms.from_poscar("/home/diegop/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data/POSCAR-JVASP-10.vasp")
+    g, lg = Graph.atom_dgl_multigraph(atoms, cutoff=float(cutoff), max_neighbors=max_neighbors)
+    lat = torch.tensor(atoms.lattice_mat)
+    out_data = (
+        model([g.to(device), lg.to(device),lat.to(device)])['out']
+        .detach()
+        .cpu()
+        .numpy()
+        .flatten()
+        .tolist()[0]
+    )
+
+    print ('output: ', out_data)
+    return atoms
+
+# With the small training dataset the example model is clearly giving some unphysical values for bandgaps, but at least shows that the training scripts are working without error.
+# We can also modify structures, rebuild the graph, and update predictions. In this case we make a supercell of the previous structure
+
+def modify_structures(atoms):
+    atoms = atoms.make_supercell([2, 2, 2])
+    g, lg = Graph.atom_dgl_multigraph(atoms)
+    lat = torch.tensor(atoms.lattice_mat)
+    out_data = (
+        model([g.to(device), lg.to(device),lat.to(device)])['out']
+        .detach()
+        .cpu()
+        .numpy()
+        .flatten()
+        .tolist()[0]
+    )
+    print("supercell", out_data)
+
+# In addition to individual structures, let's look at the model performance across the test dataset
+
+def model_performance():
+    d=loadjson(os.path.join(output_directory,'Test_results.json'))
+    x=[i['target_out'][0] for i in d]
+    y=[i['pred_out'] for i in d]
+    ids=[i['id'] for i in d]
+    
+    # we can convert to csv for later
+
+    # Create a DataFrame to save the results in csv for later
+    data = {'id': ids, 'target': x, 'prediction': y}
+    temp_df = pd.DataFrame(data)
+
+    # Save the DataFrame as a CSV file
+    csv_file = 'sample_test/prediction_results_test_set.csv'
+    temp_df.to_csv(csv_file, index=False)
+
+def create_plot():
+    import matplotlib.pyplot as plt
+
+    d=loadjson(os.path.join(output_directory,'Test_results.json'))
+    x=[i['target_out'][0] for i in d]
+    y=[i['pred_out'] for i in d]
+
+    plt.plot(x,y,'.')
+    plt.plot(x,x)
+    plt.xlabel('DFT')
+    plt.ylabel('ALIGNN')
+    plt.savefig('DFT_ALIGNN.png', dpi=300, bbox_inches='tight')
+
+    from sklearn.metrics import mean_absolute_error
+    print('MAE',mean_absolute_error(x,y))
+
+# Part 3: Obtaining Voltage Data
+#The data file contains U-MLIP relaxed structures and average voltages for 2288 materials. Let's plot a histogram of the computed average voltages to see their distribution:
+
+def create_df():
+    d = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN"
+    df = joblib.load(os.path.join(d, 'mp_Na_eqV2.pkl'))
+    return df
+
+def plot_voltage_histogram(df, dataset='MP', ion='Na'):
+    bins = np.arange(0, 10, 0.2)
+
+    # Matterverse avg voltage has a bunch of negative values- remove them!
+    df = df[df['Average voltage (V/ion)'] >=0]
+
+    plt.clf()
+
+    plt.hist(bins=bins, x=df['Average voltage (V/ion)'], color='red', edgecolor='black', alpha=0.5, label='EquiformerV2')
+
+    plt.xlabel('Average voltage (V/Na)', fontsize=14)
+    plt.xticks(fontsize=12)
+    plt.ylabel('Number of occurrences', fontsize=14)
+    plt.yticks(fontsize=12)
+    plt.legend(loc='best')
+    plt.savefig('Voltage_histogram_'+dataset+'_'+ion+'.png', dpi=300, bbox_inches='tight')
+
+    vals = df['Average voltage (V/ion)']
+    print('EquiformerV2 stats')
+    print(np.mean(vals), np.std(vals), min(vals), max(vals))
+
+    return
+
+# Part 4: Creating the input data structure
+# ALIGNN expects a set of input POSCAR files so let's create a new directory and output all 2,288 structures to POSCAR files
+
+def create_vasp_directory():
+    import os
+
+    # Create the directory if it doesn't exist
+    output_dir = 'voltage_data'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Create a list to store the filenames
+    filenames = []
+
+    # Iterate through the DataFrame and save each structure as a POSCAR file
+    for i, structure in enumerate(df['Structure']):
+        filename = f'POSCAR_{i}.vasp'
+        structure.to(os.path.join(output_dir,filename))
+        filenames.append(filename)
+
+    # Add the filenames as a new column to the DataFrame
+    df['poscar_filename'] = filenames
+
+    print(f"Saved {len(df)} POSCAR files to the '{output_dir}' directory and added filenames to the DataFrame.")
+
+model = use_trained_model()
+atoms = graph_representation(model)
+modify_structures(atoms)
+model_performance()
+create_plot()
+df = create_df()
+plot_voltage_histogram(df)
+create_vasp_directory()
+

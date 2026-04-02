@@ -5,9 +5,15 @@ import joblib
 import os
 from pymatgen.core import Structure, Composition
 from pathlib import Path
+import random
+import pandas as pd
+import shutil
+import csv
 
 d = "/home/diegop/Documents/Pymatgen-2026/"
-output_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data"
+output_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/"
+training_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_training_data/"
+test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_test_data/"
 
 def create_vasp_directory(df):
     
@@ -60,8 +66,8 @@ def create_vasp_files(df):
 
 # And use the previous dataframe to create our id_prop.csv
 
-def create_csv_prop_file(df):
-    output_file = os.path.join(output_dir, 'id_prop.csv')
+def create_csv_prop_file(df, training_data_dir):
+    output_file = os.path.join(training_data_dir, 'id_prop.csv')
 
     # Select the required columns and save to a CSV file without headers
     df[['poscar_filename', 'total_magnetization']].to_csv(output_file, index=False, header=False)
@@ -71,15 +77,15 @@ def create_csv_prop_file(df):
 # The first column points to each POSCAR file we created, and the second the paired Average Voltage property
 # To start we'll use the same example config file
 
-def set_config_file():
+def set_config_file(training_data_dir):
     import os
     import shutil
 
     source_config_path = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/vasp_output/config_example.json'
-    destination_config_path = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/config.json'
+    destination_config_path = training_data_dir + 'config.json'
 
     # Ensure the destination directory exists (already created in a previous step)
-    output_dir = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data'
+    output_dir = training_data_dir
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -91,7 +97,7 @@ def set_config_file():
     from jarvis.db.jsonutils import loadjson
     import os
 
-    config_path = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/config.json'
+    config_path = training_data_dir + 'config.json'
     config = loadjson(config_path)
     print("Config file loaded successfully.")
     
@@ -109,13 +115,53 @@ def clear_cache(config_path, config):
     dumpjson(config,config_path)
     print(f"Updated config saved to '{config_path}'")
 
-def sorting_training_test_files():
+def sorting_training_test_files(df):
+
+    if not os.path.exists(training_data_dir):
+        os.makedirs(training_data_dir)
     
+    if not os.path.exists(test_data_dir):
+        os.makedirs(test_data_dir)
+    
+    df = pd.read_csv("/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/id_prop_sorting.csv")
+
+    for filename in df["filename"]:
+        random_number = random.randrange(0, 100, 1)
+
+        if (random_number <= 20):
+            shutil.copyfile(output_dir + filename, training_data_dir + filename)
+        else:
+            shutil.copyfile(output_dir + filename, test_data_dir + filename)
+
+    print("Training and test data have been sorted.")
+            
+def create_csv_prop_file_training_sample(df, training_data_dir):
+    output_file = os.path.join(training_data_dir, 'id_prop.csv')
+
+    poscars_filenames = []
+    total_magnetization_values = []
+
+    for i in range(df.shape[0]):
+        if os.path.exists(training_data_dir + "POSCAR_" + str(i) + ".vasp"):
+            poscars_filenames.append("POSCAR_" + str(i) + ".vasp")
+            total_magnetization_values.append(df['total_magnetization'].loc[df.index[i]])
+    i = i + 1
+
+    # Creating a dictionary
+    prop_id_columns = {'poscars_filenames': poscars_filenames, 'total_magnetization': total_magnetization_values}
+
+    # Creating DataFrame
+    df_id_prop = pd.DataFrame(prop_id_columns)
+
+    # Saving to CSV
+    df_id_prop.to_csv(training_data_dir + 'id_prop.csv', index=False, header=False)
 
 df = joblib.load(os.path.join(d, 'perovskites_sample.pkl'))
 
 #create_vasp_directory(df)
-df = create_vasp_files(df)
-create_csv_prop_file(df)
-config_path, config = set_config_file()
+#df = create_vasp_files(df)
+#create_csv_prop_file(df, training_data_dir)
+config_path, config = set_config_file(training_data_dir)
 clear_cache(config_path, config)
+#sorting_training_test_files()
+#create_csv_prop_file_training_sample(df, training_data_dir)

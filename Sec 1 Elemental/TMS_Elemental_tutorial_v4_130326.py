@@ -87,19 +87,20 @@ def Create_tables(formula):
     df.shape[0]
     return 
 
-def Run_model():
+def Run_model(pkl_path, xlsx_path):
     import joblib
-    df = joblib.load(os.path.join(d, 'docs_PRUEBA.pkl'))
+    #df = joblib.load(pkl_path)
+    df = pd.read_excel(xlsx_path)
     df.head()
 
     #The data file contains U-MLIP relaxed structures and average voltages for 2288 materials. Let's plot a histogram of the computed average voltages to see their distribution:
 
-    plot_density_histogram(df)
+    plot_histogram(df)
 
     # Create X and y as DataFrames
     X = df[['formula_pretty']].copy()
     X.rename(columns={'formula_pretty': 'composition'}, inplace=True) # Rename column to 'composition' for the feature generator
-    y = df[['density']].copy()
+    y = df[['total_magnetization_normalized_vol']].copy()
 
     # Display combined view
     #display(pd.concat([X, y], axis=1))
@@ -142,12 +143,12 @@ def Run_model():
     from sklearn.linear_model import Ridge  # <-- added for optional linear model
 
     # ======= PCA options =======
-    USE_PCA = True            # <- turn PCA on/off (True or False)
+    USE_PCA = False            # <- turn PCA on/off (True or False)
     PCA_VAR_KEEP = 0.95       # keep 95% variance (sklearn PCA allows float in (0,1])
     # ===========================
 
     # ======= Model option =======
-    MODEL_TYPE = "ridge"         # one of: "rf", "ridge"
+    MODEL_TYPE = "rf"         # one of: "rf", "ridge"
     # ===========================
 
     #Now we pull out the X and y features and target wiht right format, cleaning out any data that are not numbers.
@@ -155,7 +156,7 @@ def Run_model():
     # 1) Prepare data (assumes X_elem dataframe, y array-like)
     print("[1/7] Preparing data...")
     X = X_elem.copy()
-    y = df['density'].values.ravel()  # ensure 1D target
+    y = df['total_magnetization_normalized_vol'].values.ravel()  # ensure 1D target
 
     # Keep only numeric columns and drop rows with NaNs/Infs
     X = X.select_dtypes(include=np.number)
@@ -276,41 +277,42 @@ def Run_model():
         ax.set_ylabel("Predicted")
         ax.set_title(title, fontsize=10)
 
+    
+    plt.savefig('Magnetization_scatter.png', dpi=300, bbox_inches='tight')
     plt.tight_layout()
     plt.show()
+    
 
     print("\n✅ Workflow complete.")
     return
 
-def plot_density_histogram(df, dataset='MP', ion='Na'):
+def plot_histogram(df, dataset='MP', ion='Na'):
         bins = np.arange(0, 10, 0.2)
 
         # Matterverse avg voltage has a bunch of negative values- remove them!
 
         #CHANGED TO DENSITY, >=0 MEANS ONLY CHOOSE POSITIVE
-        df = df[df['density'] >=0]
+        df = df[df['total_magnetization'] >=0]
 
         plt.clf()
 
-        plt.hist(bins=bins, x=df['density'], color='red', edgecolor='black', alpha=0.5, label='Density')
+        plt.hist(bins=bins, x=df['total_magnetization_normalized_vol'], color='red', edgecolor='black', alpha=0.5, label='Total Magnetization')
 
-        plt.xlabel('Densiy', fontsize=14)
+        plt.xlabel('Total Magnetization', fontsize=14)
         plt.xticks(fontsize=12)
         plt.ylabel('Number of occurrences', fontsize=14)
         plt.yticks(fontsize=12)
         plt.legend(loc='best')
-        plt.savefig('Voltage_histogram_'+dataset+'_'+ion+'.png', dpi=300, bbox_inches='tight')
+        plt.savefig('Magnetization_histogram.png', dpi=300, bbox_inches='tight')
 
-        vals = df['density']
-        print('Density stat')
+        vals = df['total_magnetization']
+        print('Magnetization stat')
         fmt = lambda x: np.format_float_positional(x, precision=3, unique=False, fractional=False, trim='k')
 
         print(f"{'Mean:':25s}{fmt(np.mean(vals)):>12s}")
         print(f"{'Standard deviation:':25s}{fmt(np.std(vals)):>12s}")
         print(f"{'Min:':25s}{fmt(min(vals)):>12s}")
         print(f"{'Max:':25s}{fmt(max(vals)):>12s}")
-
-        return
 
 formula = ["BaTiO3","SrTiO3","CaTiO3", "LaMnO3", "BiFeO3", "SmFeO3", "PbTiO3","CaZrO3", "CaSnO3","SrZrO3",   "BaZrO3", "PbZrO3","BaHfO3", "SrHfO3", "CaHfO3"
                 , "KNbO3", "NaNbO3", "KTaO3", "NaTaO3", "SrSnO3","BaSnO3", "CdTiO3","ZnTiO3","CaRuO3", "SrRuO3","BaRuO3", "LaCoO3", "LaNiO3", "LaCrO3", "NdFeO3"
@@ -319,8 +321,11 @@ formula = ["BaTiO3","SrTiO3","CaTiO3", "LaMnO3", "BiFeO3", "SmFeO3", "PbTiO3","C
                 , "BaTaO3", "CaMoO3", "SrMoO3", "BaMoO3", "CaWO3", "SrWO3", "BaWO3", "NdMnO3", "PrMnO3", "SmMnO3", "GdMnO3", "TbFeO3", "ErFeO3", "YbFeO3"
                 , "CsGeI3", "CsGeBr3", "CsGeCl3", "MaSnCl3", "FASnBr3", "LaCuO3","CaCuO3", "SrCuO3", "BaPbO3", "SrIrO3", "CaIrO3"]
 
+pkl_path = "/home/diegop/Documents/Pymatgen-2026/perovskites_sample.pkl"
+xlsx_path = "/home/diegop/Documents/Pymatgen-2026/perovskites_sample_full.xlsx"
+
 #Create_tables(formula)
-Run_model()
+Run_model(pkl_path, xlsx_path)
 
 """
 That is a complete fit and assessment with test data and cross-validation. To explore further, consider trying the following

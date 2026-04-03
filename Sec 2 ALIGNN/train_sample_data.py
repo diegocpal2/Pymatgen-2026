@@ -216,9 +216,8 @@ def create_plot():
 # Part 3: Obtaining Voltage Data
 #The data file contains U-MLIP relaxed structures and average voltages for 2288 materials. Let's plot a histogram of the computed average voltages to see their distribution:
 
-def create_df():
-    d = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN"
-    df = joblib.load(os.path.join(d, 'mp_Na_eqV2.pkl'))
+def create_df(pkl_path):
+    df = joblib.load(pkl_path)
     return df
 
 def plot_voltage_histogram(df, dataset='MP', ion='Na'):
@@ -244,11 +243,15 @@ def plot_voltage_histogram(df, dataset='MP', ion='Na'):
 
     return
 
+model_dir = "/home/diegop/Documents/Pymatgen-2026/perovskites_total_magnetization_full_data/"
+data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/"
+pkl_path = "/home/diegop/Documents/Pymatgen-2026/perovskites_sample.pkl"
+
 model = use_trained_model()
 atoms = graph_representation(model)
 modify_structures(atoms)
 model_performance()
 create_plot()
-df = create_df()
+df = create_df(pkl_path)
 plot_voltage_histogram(df)
 

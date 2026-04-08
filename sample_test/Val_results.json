@@ -1,1 +1,0 @@
-[{"id": "POSCAR-JVASP-64240.vasp", "target_out": [0.0, 0.0, 0.0, 1.569000005722046], "pred_out": [-0.017087575048208237, 0.4496636688709259, -0.12897536158561707, 1.0690282583236694], "target_atomwise_pred": [], "pred_atomwise_pred": [], "target_grad": [], "pred_grad": [], "target_stress": [], "pred_stress": []}]

@@ -287,7 +287,10 @@ def Run_model(pkl_path, xlsx_path):
     return
 
 def plot_histogram(df, dataset='MP', ion='Na'):
-        bins = np.arange(0, 10, 0.2)
+        """ 
+        Test dafsflsfjlsjlksjeflkjslkfjlskefjlksejflksejflkjlksjflksejlkjflkje
+        """ 
+        bins = np.arange(0, 0.5, 0.001)
 
         # Matterverse avg voltage has a bunch of negative values- remove them!
 

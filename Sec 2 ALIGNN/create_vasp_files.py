@@ -9,35 +9,19 @@ import random
 import pandas as pd
 import shutil
 import csv
+from jarvis.db.jsonutils import loadjson
 
-d = "/home/diegop/Documents/Pymatgen-2026/"
-output_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/"
-training_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_training_data/"
-test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_test_data/"
+def create_vasp_files(df, dir_name):
+    """
+       Creates the vasp files corresponding to a Materials Project Pandas dataframe. The dataframe must include the "structure" column. 
 
-def create_vasp_directory(df):
-    
-    # Create the directory if it doesn't exist
-    output_dir = 'perovskites_data'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    Args:
+        df (pandas_dataframe): Pandas dataframe containing the results of pulling a series of materials information form the The Materials Project site using their API (library mp_api). The dataframes must contain the "structure" column.
+        dir_name (string): Name of the directory where the vasp files are going to be stored. The directory will be created within the current directory.
 
-    # Create a list to store the filenames
-    filenames = []
-
-    # Iterate through the DataFrame and save each structure as a POSCAR file
-    for i, structure in enumerate(Structure.from_dict(df['structure'])):
-        filename = f'POSCAR_{i}.vasp'
-        structure.to(os.path.join(output_dir,filename))
-        filenames.append(filename)
-
-    # Add the filenames as a new column to the DataFrame
-    df['poscar_filename'] = filenames
-
-    print(f"Saved {len(df)} POSCAR files to the '{output_dir}' directory and added filenames to the DataFrame.")
-
-
-def create_vasp_files(df):
+    Returns:
+        df: Dataframe from the argument "df" with the added column "filenames" which contains the filenames of the vasp files created for each material in the dataframe.
+    """    
     #CREATE VASP FILE FOLDER FOR MATERIALS
 
     # Get current script directory
@@ -47,7 +31,7 @@ def create_vasp_files(df):
     filenames = []
 
     # Create folder
-    folder_path = current_dir / "perovskites_data"
+    folder_path = current_dir + "/" + dir_name
     print(folder_path)
     folder_path.mkdir(exist_ok=True)
 
@@ -66,11 +50,18 @@ def create_vasp_files(df):
 
 # And use the previous dataframe to create our id_prop.csv
 
-def create_csv_prop_file(df, training_data_dir):
+def create_csv_prop_file(df, training_data_dir, property):
+    """
+        Creates the CSV properties file in the same folder of the vasp files. This files contains two columns. The first column contains the vasp files filenames for each structure in the dataframe. The second column contains the numerical value of the property that the model is going to be trained on. The file will have the name "id_prop.csv". The file is generated without headers which is required by the functions in "train_alignn.py".   
+
+    Args:
+        df (df): Pandas dataframe containing the results of pulling a series of materials information form the The Materials Project site using their API (library mp_api). The dataframes must contain the "structure" column. This dataframe must also contain the "poscar_filenames" column, therefore it must be the one returned by the function create_vasp_files(df, dir_name).
+        training_data_dir (str): Path of the directory containing the vasp files to be used for the training of the model. The CSV file "id_prop.csv" will be generated in this directory.  
+    """    
     output_file = os.path.join(training_data_dir, 'id_prop.csv')
 
     # Select the required columns and save to a CSV file without headers
-    df[['poscar_filename', 'total_magnetization']].to_csv(output_file, index=False, header=False)
+    df[['poscar_filename', property]].to_csv(output_file, index=False, header=False)
 
     print(f"Saved id and property data to '{output_file}'.")
 
@@ -78,6 +69,16 @@ def create_csv_prop_file(df, training_data_dir):
 # To start we'll use the same example config file
 
 def set_config_file(training_data_dir):
+    """
+       Duplicates the config file "config.json" into the training data directory. This file can be edited to control certain training parameters.
+
+    Args:
+        training_data_dir (str): Path of the directory containing the vasp files to train the model. The config file "config.json" will be copied into this directory.
+
+    Returns:
+        str: Path to the copied config "config.json" file.
+        dict: Dictionary containing the setup parameters for the training of the model.
+    """    
     import os
     import shutil
 
@@ -94,74 +95,45 @@ def set_config_file(training_data_dir):
 
     print(f"Copied '{source_config_path}' to '{destination_config_path}'")
 
-    from jarvis.db.jsonutils import loadjson
-    import os
-
     config_path = training_data_dir + 'config.json'
     config = loadjson(config_path)
     print("Config file loaded successfully.")
     
     return config_path, config
 
-# And we'll make sure to update the 'filename' key which is a filename for where the constructed graphs of each structure will be cached. If we don't update this ALIGNN will continue to pull the previous structuers instead of our new ones. Anytime we want to update structures we need to make sure to clear this out or change the setting.
+# And we'll make sure to update the 'filename' key which is a filename for where the constructed graphs of each structure will be cached. If we don't update this ALIGNN will continue to pull the previous structures instead of our new ones. Anytime we want to update structures we need to make sure to clear this out or change the setting.
 
 def clear_cache(config_path, config):
+    """
+        Clears the filename registry in the ALIGNN library. This cache must be cleared anytime a new model is going to be trained to avoid the model being trained using previously used structures.
+
+    Args:
+        config_path (str): Path of the directory containing the vasp files and csv properties file "id_prop.csv".
+        config (dict): Dictionary which contains the setup parameters for the training. This file will be used by the file "training_alignn.py".
+    """    
     from jarvis.db.jsonutils import dumpjson
 
     config['filename'] = 'V'
     print("Updated config['filename'] to:", config['filename'])
 
-    config_path = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/config.json'
+    config_path = config_path + '/config.json'
     dumpjson(config,config_path)
     print(f"Updated config saved to '{config_path}'")
 
-def sorting_training_test_files(df):
+#df = joblib.load(os.path.join(d, 'perovskites_sample.pkl'))
 
-    if not os.path.exists(training_data_dir):
-        os.makedirs(training_data_dir)
-    
-    if not os.path.exists(test_data_dir):
-        os.makedirs(test_data_dir)
-    
-    df = pd.read_csv("/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/id_prop_sorting.csv")
-
-    for filename in df["filename"]:
-        random_number = random.randrange(0, 100, 1)
-
-        if (random_number <= 20):
-            shutil.copyfile(output_dir + filename, training_data_dir + filename)
-        else:
-            shutil.copyfile(output_dir + filename, test_data_dir + filename)
-
-    print("Training and test data have been sorted.")
-            
-def create_csv_prop_file_training_sample(df, training_data_dir):
-    output_file = os.path.join(training_data_dir, 'id_prop.csv')
-
-    poscars_filenames = []
-    total_magnetization_values = []
-
-    for i in range(df.shape[0]):
-        if os.path.exists(training_data_dir + "POSCAR_" + str(i) + ".vasp"):
-            poscars_filenames.append("POSCAR_" + str(i) + ".vasp")
-            total_magnetization_values.append(df['total_magnetization'].loc[df.index[i]])
-    i = i + 1
-
-    # Creating a dictionary
-    prop_id_columns = {'poscars_filenames': poscars_filenames, 'total_magnetization': total_magnetization_values}
-
-    # Creating DataFrame
-    df_id_prop = pd.DataFrame(prop_id_columns)
-
-    # Saving to CSV
-    df_id_prop.to_csv(training_data_dir + 'id_prop.csv', index=False, header=False)
-
-df = joblib.load(os.path.join(d, 'perovskites_sample.pkl'))
+config_path = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/config.json'
+d = "/home/diegop/Documents/Pymatgen-2026/"
+output_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/"
+training_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_training_data/"
+test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_test_data/"
 
 #create_vasp_directory(df)
 #df = create_vasp_files(df)
 #create_csv_prop_file(df, training_data_dir)
-config_path, config = set_config_file(training_data_dir)
-clear_cache(config_path, config)
+#config_path, config = set_config_file(training_data_dir)
+#clear_cache(config_path, config)
 #sorting_training_test_files()
 #create_csv_prop_file_training_sample(df, training_data_dir)
+
+print(type(loadjson(config_path)))

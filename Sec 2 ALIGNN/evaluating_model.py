@@ -14,7 +14,15 @@ from jarvis.db.jsonutils import loadjson
 import pandas as pd
 
 def visualize_performance(model_dir):
-    
+    """_summary_
+
+    Args:
+        model_dir (str): Path of the directory containing the output of a trained model using the ALIGNN library.
+
+    Returns:
+        _type_: _description_
+    """    
+
     output_features =  1
     filename = model_dir + 'best_model.pt'
     device = "cpu"
@@ -25,6 +33,7 @@ def visualize_performance(model_dir):
     config=loadjson(model_dir + 'config.json')
 
     model = ALIGNNAtomWise(ALIGNNAtomWiseConfig(**config["model"]))
+    print(type(model))
     model.load_state_dict(torch.load(filename, map_location=device))
     model.eval()
     return model
@@ -55,8 +64,14 @@ def load_test_data(model_dir):
     from sklearn.metrics import mean_absolute_error
     print('MAE',mean_absolute_error(x,y))
 
-model_dir = "/home/diegop/Documents/Pymatgen-2026/perovskites_total_magnetization_full_data/"
+def test_device():
+    device = "cpu"
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    print(device)
+
+model_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/Output2/perovskites_normalized_magnetization/"
 
 visualize_performance(model_dir)
-load_test_data(model_dir)
-
+#load_test_data(model_dir)
+#test_device()

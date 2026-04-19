@@ -1,0 +1,86 @@
+def create_vasp_directory(df):
+    
+    # Create the directory if it doesn't exist
+    output_dir = 'perovskites_data'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Create a list to store the filenames
+    filenames = []
+
+    # Iterate through the DataFrame and save each structure as a POSCAR file
+    for i, structure in enumerate(Structure.from_dict(df['structure'])):
+        filename = f'POSCAR_{i}.vasp'
+        structure.to(os.path.join(output_dir,filename))
+        filenames.append(filename)
+
+    # Add the filenames as a new column to the DataFrame
+    df['poscar_filename'] = filenames
+
+    print(f"Saved {len(df)} POSCAR files to the '{output_dir}' directory and added filenames to the DataFrame.")
+
+def set_config_file(training_data_dir):
+    import os
+    import shutil
+
+    source_config_path = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/vasp_output/config_example.json'
+    destination_config_path = training_data_dir + 'config.json'
+
+    # Ensure the destination directory exists (already created in a previous step)
+    output_dir = training_data_dir
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Copy the config file
+    shutil.copyfile(source_config_path, destination_config_path)
+
+    print(f"Copied '{source_config_path}' to '{destination_config_path}'")
+
+    from jarvis.db.jsonutils import loadjson
+    import os
+
+    config_path = training_data_dir + 'config.json'
+    config = loadjson(config_path)
+    print("Config file loaded successfully.")
+    
+    return config_path, config
+def sorting_training_test_files(df):
+
+    if not os.path.exists(training_data_dir):
+        os.makedirs(training_data_dir)
+    
+    if not os.path.exists(test_data_dir):
+        os.makedirs(test_data_dir)
+    
+    df = pd.read_csv("/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/id_prop_sorting.csv")
+
+    for filename in df["filename"]:
+        random_number = random.randrange(0, 100, 1)
+
+        if (random_number <= 20):
+            shutil.copyfile(output_dir + filename, training_data_dir + filename)
+        else:
+            shutil.copyfile(output_dir + filename, test_data_dir + filename)
+
+    print("Training and test data have been sorted.")
+            
+def create_csv_prop_file_training_sample(df, training_data_dir):
+    output_file = os.path.join(training_data_dir, 'id_prop.csv')
+
+    poscars_filenames = []
+    total_magnetization_values = []
+
+    for i in range(df.shape[0]):
+        if os.path.exists(training_data_dir + "POSCAR_" + str(i) + ".vasp"):
+            poscars_filenames.append("POSCAR_" + str(i) + ".vasp")
+            total_magnetization_values.append(df['total_magnetization'].loc[df.index[i]])
+    i = i + 1
+
+    # Creating a dictionary
+    prop_id_columns = {'poscars_filenames': poscars_filenames, 'total_magnetization': total_magnetization_values}
+
+    # Creating DataFrame
+    df_id_prop = pd.DataFrame(prop_id_columns)
+
+    # Saving to CSV
+    df_id_prop.to_csv(training_data_dir + 'id_prop.csv', index=False, header=False)

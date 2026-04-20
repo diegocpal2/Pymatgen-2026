@@ -51,7 +51,7 @@ Type the following commands in the terminal:
                  --output_dir="sample_test"</code>
 
 
-# Training with other structures databases
+# Training with other structure databases
 
 ## Step 1: Download the desired structures sample from the materials project database using the API method
 
@@ -73,5 +73,26 @@ clear_cache(config_path, config)
 
 The variables <code>pkl_file_path</code>, <code>current_directory_path</code> and, <code>trained_model_output_directory</code> must be replaced by the appropriated absolute paths.
 
-Note: Note that for Windows based systems paths are written with "\" instead of "/" which is used in unix based systems (MacOS and Linux).
+<strong>Note:</strong> For Windows based systems paths are written with "\" instead of "/" which is used in unix based systems (MacOS and Linux).
+
+## Step 2: Train the model with the downloaded database
+
+Execute the following command in the terminal.
+
+<code>train_alignn.py --root_dir training_data_directory \
+                --epochs number_of_epochs \
+                --batch_size batch_size \
+                --config config_file_path \
+                --output_dir=output_directory</code>
+
+The arguments for the file must be replaced in the following manner:
+
+<code>training_data_directory</code>: Directory containing the generated vasp files, <code>id_prop.csv</code> and, <code>config.json</code> files.<br>  
+<code>number_of_epochs</code>: Number of iterations the training algorithm is going to execute.<br>
+<code>batch_size</code>:<br>
+<code>config_file_path</code>: Path of the <code>config.json</code> file.<br>
+<code>output_directory</code>: Name of the directory where the model files will be generated.<br>
+
+# Making predictions with the trained models
+
 

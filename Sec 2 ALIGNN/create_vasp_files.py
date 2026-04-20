@@ -56,7 +56,8 @@ def create_csv_prop_file(df, training_data_dir, property):
 
     Args:
         df (df): Pandas dataframe containing the results of pulling a series of materials information form the The Materials Project site using their API (library mp_api). The dataframes must contain the "structure" column. This dataframe must also contain the "poscar_filenames" column, therefore it must be the one returned by the function create_vasp_files(df, dir_name).
-        training_data_dir (str): Path of the directory containing the vasp files to be used for the training of the model. The CSV file "id_prop.csv" will be generated in this directory.  
+        training_data_dir (str): Path of the directory containing the vasp files to be used for the training of the model. The CSV file "id_prop.csv" will be generated in this directory.
+        property (str): Property that the training of the model is going to be focused on.  
     """    
     output_file = os.path.join(training_data_dir, 'id_prop.csv')
 
@@ -132,5 +133,3 @@ test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_t
 #create_csv_prop_file(df, training_data_dir)
 #config_path, config = set_config_file(training_data_dir)
 #clear_cache(config_path, config)
-#sorting_training_test_files()
-#create_csv_prop_file_training_sample(df, training_data_dir)

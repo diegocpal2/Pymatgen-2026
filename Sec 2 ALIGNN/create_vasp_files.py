@@ -128,7 +128,6 @@ output_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data
 training_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_training_data/"
 test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_test_data/"
 
-#create_vasp_directory(df)
 #df = create_vasp_files(df)
 #create_csv_prop_file(df, training_data_dir)
 #config_path, config = set_config_file(training_data_dir)

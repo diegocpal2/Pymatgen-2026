@@ -59,24 +59,26 @@ The functions for downloading the structural data for training are included in t
 
 In order to generate the vasp structural files the <code>create_vasp_files.py</code> file must be executed with the end of the file set up in the shown manner:
 
-<code>df = joblib.load(os.path.join(d, 'perovskites_sample.pkl'))</code>
+<code>df = joblib.load(os.path.join(d, "pkl_file_path"))
 <br>
-<code>config_path = '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/config.json'</code>
 <br>
-<code>d = "/home/diegop/Documents/Pymatgen-2026/"
+config_path = "current_directory_path" + 'Sec 2 ALIGNN/perovskites_data/config.json'
 <br>
-<code>output_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data/"
+d = "current_directory_path"
 <br>
-<code>training_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_training_data/"
+output_dir = "trained_model_output_directory"
 <br>
-<code>test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_test_data/"
 <br>
-<code>create_vasp_directory(df)
-<code>df = create_vasp_files(df)
-<code>create_csv_prop_file(df, training_data_dir)
-<code>config_path, config = set_config_file(training_data_dir)
-<code>clear_cache(config_path, config)
-<code>sorting_training_test_files()
-<code>create_csv_prop_file_training_sample(df, training_data_dir)</code>
+df = create_vasp_files(df)
+<br>
+create_csv_prop_file(df, training_data_dir)
+<br>
+config_path, config = set_config_file(training_data_dir)
+<br>
+clear_cache(config_path, config)
+</code>
 
+The variables <code>pkl_file_path</code>, <code>current_directory_path</code> and, <code>trained_model_output_directory</code> must be replaced by the appropriated absolute paths.
+
+Note: Note that for Windows based systems paths are written with "\" instead of "/" which is used in unix based systems (MacOS and Linux).
 

@@ -59,22 +59,15 @@ The functions for downloading the structural data for training are included in t
 
 In order to generate the vasp structural files the <code>create_vasp_files.py</code> file must be executed with the end of the file set up in the shown manner:
 
-<code>df = joblib.load(os.path.join(d, "pkl_file_path"))
+<code>df = joblib.load(os.path.join(d, "pkl_file_path"))<br>
 <br>
+config_path = "current_directory_path" + 'Sec 2 ALIGNN/perovskites_data/config.json'<br>
+d = "current_directory_path"<br>
+output_dir = "trained_model_output_directory"<br>
 <br>
-config_path = "current_directory_path" + 'Sec 2 ALIGNN/perovskites_data/config.json'
-<br>
-d = "current_directory_path"
-<br>
-output_dir = "trained_model_output_directory"
-<br>
-<br>
-df = create_vasp_files(df)
-<br>
-create_csv_prop_file(df, training_data_dir)
-<br>
-config_path, config = set_config_file(training_data_dir)
-<br>
+df = create_vasp_files(df)<br>
+create_csv_prop_file(df, training_data_dir)<br>
+config_path, config = set_config_file(training_data_dir)<br>
 clear_cache(config_path, config)
 </code>
 

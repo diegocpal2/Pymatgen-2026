@@ -135,5 +135,3 @@ test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_t
 #clear_cache(config_path, config)
 #sorting_training_test_files()
 #create_csv_prop_file_training_sample(df, training_data_dir)
-
-print(type(loadjson(config_path)))

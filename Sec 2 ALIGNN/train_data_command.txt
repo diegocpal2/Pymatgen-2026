@@ -1,8 +1,4 @@
-/home/diegop/Documents/Pymatgen-2026/.venv/bin/python /home/diegop/Documents/Pymatgen-2026/alignn/alignn/train_alignn.py --root_dir "/home/diegop/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data" \
---epochs 100 \
---batch_size 4 \ 
---config "/home/diegop/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data/config_example.json" \
---output_dir="sample_test"
+/home/user/Documents/Pymatgen-2026/.venv/bin/python /home/user/Documents/Pymatgen-2026/alignn/alignn/train_alignn.py --root_dir "/home/user/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data" --epochs 10 --batch_size 4 --config "/home/user/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data/config_example.json" --output_dir="sample_test"
 
 /home/diegop/Documents/Pymatgen-2026/.venv/bin/python "/home/diegop/Documents/Pymatgen-2026/alignn/alignn/train_alignn.py" --root_dir '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/voltage_data'                 --epochs 10                 --batch_size 16                 --config '/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/voltage_data/config.json'                 --output_dir=voltage_output
 

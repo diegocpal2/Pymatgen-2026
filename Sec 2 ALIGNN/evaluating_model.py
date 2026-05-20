@@ -64,14 +64,8 @@ def load_test_data(model_dir):
     from sklearn.metrics import mean_absolute_error
     print('MAE',mean_absolute_error(x,y))
 
-def test_device():
-    device = "cpu"
-    if torch.cuda.is_available():
-        device = torch.device("cuda")
-    print(device)
+model_dir = "/home/user/Documents/Pymatgen-2026/gpu_test_clean_110ep/"
 
-model_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/Output2/perovskites_normalized_magnetization/"
-
-visualize_performance(model_dir)
-#load_test_data(model_dir)
+#visualize_performance(model_dir)
+load_test_data(model_dir)
 #test_device()

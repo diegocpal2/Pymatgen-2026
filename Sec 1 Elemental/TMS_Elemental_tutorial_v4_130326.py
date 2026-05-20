@@ -317,7 +317,7 @@ def plot_histogram(df, dataset='MP', ion='Na'):
         print(f"{'Min:':25s}{fmt(min(vals)):>12s}")
         print(f"{'Max:':25s}{fmt(max(vals)):>12s}")
 
-#formula = ["BaTiO3","SrTiO3","CaTiO3", "LaMnO3", "BiFeO3", "SmFeO3", "PbTiO3","CaZrO3", "CaSnO3","SrZrO3",   "BaZrO3", "PbZrO3","BaHfO3", "SrHfO3", "CaHfO3"
+formula = ["BaTiO3","SrTiO3","CaTiO3", "LaMnO3", "BiFeO3", "SmFeO3", "PbTiO3","CaZrO3", "CaSnO3","SrZrO3",   "BaZrO3", "PbZrO3","BaHfO3", "SrHfO3", "CaHfO3"
                 , "KNbO3", "NaNbO3", "KTaO3", "NaTaO3", "SrSnO3","BaSnO3", "CdTiO3","ZnTiO3","CaRuO3", "SrRuO3","BaRuO3", "LaCoO3", "LaNiO3", "LaCrO3", "NdFeO3"
                 , "GdFeO3", "DyFeO3","LaFeO3", "TbMnO3", "DyMnO3", "EuTiO3", "YFeO3", "HoMnO3", "ErMnO3","ErMnO3", "CsPbBr3", "CsPbCl3", "CsSnI3", "CsSnI3"
                 , "CsSnBr3", "FAPbBr3", "FASnI3", "MAPbCl3", "LaAlO3", "NdAlO3", "PrAlO3", "SmAlO3", "GdAlO3", "CaNbO3", "SrNbO3", "BaNbO3", "CaTaO3", "SrTaO3"
@@ -326,11 +326,11 @@ def plot_histogram(df, dataset='MP', ion='Na'):
 
 formula = ["BaTiO3"]
 
-pkl_path = "/home/diegop/Documents/Pymatgen-2026/perovskites_sample.pkl"
-xlsx_path = "/home/diegop/Documents/Pymatgen-2026/perovskites_sample_full.xlsx"
+pkl_path = "/home/user/Documents/Pymatgen-2026/perovskites_data/perovskites_sample.pkl"
+xlsx_path = "/home/user/Documents/Pymatgen-2026/perovskites_data/perovskites_sample_full.xlsx"
 
-Create_tables(formula)
-#Run_model(pkl_path, xlsx_path)
+#Create_tables(formula)
+Run_model(pkl_path, xlsx_path)
 
 """
 That is a complete fit and assessment with test data and cross-validation. To explore further, consider trying the following

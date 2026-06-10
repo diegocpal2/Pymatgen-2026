@@ -26,7 +26,7 @@ read -p "Enter the fields to be downloaded following the format: field_1,field_2
 
 elif [ $action_selection -eq 2 ]
 then
-echo "To prepare database for training follow the instructions: "
+echo "To prepare database for training follow the instructions:"
 
 read -p "Enter the name of the .pkl file (example.pkl): " pkl_file_name
 read -p "Enter the name of the output directory: " output_directory_name
@@ -36,10 +36,26 @@ read -p "Enter the material property to train the model: " training_property
 
 elif [ $action_selection -eq 3 ]
 then
-echo "You have selected the option #3"
+echo "To train the model follow the instructions:"
+
+read -p "Enter the name of the training data folder: " vasp_directory
+read -p "Enter the number of epochs for training: " epochs
+read -p "Enter the batch size (4, 16, 32): " batch_size
+read -p "Enter the name of the trained model directory: " trained_model_directory
+
+root_directory="/home/diegop/Documents/Pymatgen-2026-demo/"
+config_file="/config.json"
+
+config_path="${root_directory}${vasp_directory}${config_file}"
+vasp_directory="${root_directory}${vasp_directory}"
+
+/home/diegop/Documents/Pymatgen-2026-demo/.venv_Sec2/bin/python "/home/diegop/Documents/Pymatgen-2026-demo/alignn/alignn/train_alignn.py" --root_dir $vasp_directory  --epochs $epochs --batch_size $batch_size --config $config_path --output_dir=$trained_model_directory
+
 elif [ $action_selection -eq 4 ]
 then
-echo "You have selected the option #4"
+echo "To evaluate a model follow the instructions"
+
+read -p " "
 fi
 
 #/home/diegop/Documents/Pymatgen-2026-demo/.venv_Sec2/bin/python "/home/diegop/Documents/Pymatgen-2026-demo/Sec 2 ALIGNN/evaluating_model.py"

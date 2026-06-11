@@ -55,7 +55,15 @@ elif [ $action_selection -eq 4 ]
 then
 echo "To evaluate a model follow the instructions"
 
-read -p " "
+read -p "Enter the name of the model directory: " trained_model_directory
+read -p "Enter the name of the plot file: " plot_file
+
+root_directory="/home/diegop/Documents/Pymatgen-2026-demo/"
+
+trained_model_directory="${root_directory}${trained_model_directory}"
+
+/home/diegop/Documents/Pymatgen-2026-demo/.venv/bin/python "/home/diegop/Documents/Pymatgen-2026-demo/Sec 2 ALIGNN/evaluating_model.py" $trained_model_directory $plot_file
+
 fi
 
 #/home/diegop/Documents/Pymatgen-2026-demo/.venv_Sec2/bin/python "/home/diegop/Documents/Pymatgen-2026-demo/Sec 2 ALIGNN/evaluating_model.py"

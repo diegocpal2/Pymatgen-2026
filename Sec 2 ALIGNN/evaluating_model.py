@@ -12,6 +12,7 @@ import torch
 from alignn.models.alignn_atomwise import ALIGNNAtomWise , ALIGNNAtomWiseConfig
 from jarvis.db.jsonutils import loadjson
 import pandas as pd
+import sys
 
 def visualize_performance(model_dir):
     """_summary_
@@ -30,7 +31,7 @@ def visualize_performance(model_dir):
         device = torch.device("cuda")
 
     # load config from output folder
-    config=loadjson(model_dir + 'config.json')
+    config=loadjson(model_dir + '/config.json')
 
     model = ALIGNNAtomWise(ALIGNNAtomWiseConfig(**config["model"]))
     print(type(model))
@@ -41,7 +42,7 @@ def visualize_performance(model_dir):
 # again load back in the test data
 
 def load_test_data(model_dir):
-    d=loadjson(model_dir + 'Test_results.json')
+    d=loadjson(model_dir + '/Test_results.json')
     x=[i['target_out'][0] for i in d]
     y=[i['pred_out'] for i in d]
     ids=[i['id'] for i in d]
@@ -51,7 +52,7 @@ def load_test_data(model_dir):
     voltage_df = pd.DataFrame(data)
 
     # Save the DataFrame as a CSV file
-    csv_file = model_dir + 'prediction_results_test_set.csv'
+    csv_file = model_dir + '/prediction_results_test_set.csv'
     voltage_df.to_csv(csv_file, index=False)
 
     import matplotlib.pyplot as plt
@@ -59,13 +60,15 @@ def load_test_data(model_dir):
     plt.plot(x,x)
     plt.xlabel('Total Magnetization')
     plt.ylabel('ALIGNN')
-    plt.savefig('Prediction_results_perovskites.png', dpi=300, bbox_inches='tight')
+    plt.savefig(sys.argv[1:][1] + ".png", dpi=300, bbox_inches='tight')
+
+    print("A plot picture was saved with the name " + sys.argv[1:][1] + ".png")
 
     from sklearn.metrics import mean_absolute_error
     print('MAE',mean_absolute_error(x,y))
 
-model_dir = "/home/user/Documents/Pymatgen-2026/gpu_test_clean_110ep/"
+#model_dir = "/home/diegop/Documents/Pymatgen-2026-demo/gpu_test_clean_100ep/"
 
 #visualize_performance(model_dir)
-load_test_data(model_dir)
+load_test_data(sys.argv[1:][0])
 #test_device()

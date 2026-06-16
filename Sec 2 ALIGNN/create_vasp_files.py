@@ -10,6 +10,7 @@ import pandas as pd
 import shutil
 import csv
 from jarvis.db.jsonutils import loadjson
+import sys
 
 def create_vasp_files(df, output_dir):
     """
@@ -128,18 +129,23 @@ def clear_cache(config_path):
     print(f"Updated config saved to '{config_path}'")
 
 
-dataframe_source = "/home/user/Documents/Pymatgen-2026/perovskites_data/perovskites_sample_cleaned.pkl"
-output_dir = "/home/user/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data_cleaned/"
-mat_property = "total_magnetization_normalized_vol"
-source_config_path = "/home/user/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data/config_example.json"
+#dataframe_source = "/home/user/Documents/Pymatgen-2026/perovskites_data/perovskites_sample_cleaned.pkl"
+#output_dir = "/home/user/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_data_cleaned/"
+#mat_property = "total_magnetization_normalized_vol"
+#source_config_path = "/home/user/Documents/Pymatgen-2026/alignn/alignn/examples/sample_data/config_example.json"
 
 #d = "/home/diegop/Documents/Pymatgen-2026/perovskites_data"
 
 #training_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_training_data/"
 #test_data_dir = "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/perovskites_test_data/"
 
-#df = joblib.load(dataframe_source)
-#df = create_vasp_files(df, output_dir)
-#create_csv_prop_file(df, output_dir, mat_property)
+dataframe_source = "/home/diegop/Documents/Pymatgen-2026-demo/" + sys.argv[1:][0] + ".pkl"
+output_dir = "/home/diegop/Documents/Pymatgen-2026-demo/" + sys.argv[1:][1] + "/"
+mat_property = sys.argv[1:][2]
+source_config_path = "/home/diegop/Documents/Pymatgen-2026-demo/alignn/alignn/examples/sample_data/config_example.json"
+
+df = joblib.load(dataframe_source)
+df = create_vasp_files(df, output_dir)
+create_csv_prop_file(df, output_dir, mat_property)
 config_path, config = set_config_file(source_config_path, output_dir)
 clear_cache(config_path)

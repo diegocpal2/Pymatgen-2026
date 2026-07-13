@@ -1,18 +1,16 @@
 #! /usr/bin/bash
 
 echo "This is an script to prepare a database materials database, train models, evaluate the trained models and make predictions."
-
 echo "What action are you looking to execute?"
-
 echo "1. Download database from The Materials Project."
-
 echo "2. Prepare database for training."
-
 echo "3. Train model."
-
 echo "4. Evaluate model."
+echo "5. Formula lookup."
+echo "5. Predict property after applying strain to the structure."
+echo "6. Predict property after changing structure atoms."
 
-read -p "Select an action (1-4): " action_selection
+read -p "Select an action (1-6): " action_selection
 
 if [ $action_selection -eq 1 ]
 then
@@ -63,6 +61,15 @@ root_directory="/home/diegop/Documents/Pymatgen-2026-demo/"
 trained_model_directory="${root_directory}${trained_model_directory}"
 
 /home/diegop/Documents/Pymatgen-2026-demo/.venv/bin/python "/home/diegop/Documents/Pymatgen-2026-demo/Sec 2 ALIGNN/evaluating_model.py" $trained_model_directory $plot_file
+
+elif [ $action_selection -eq 5 ]
+then
+echo "To perform a formula lookup follow the instructions"
+
+read -p "Enter the name of the pkl file: " pkl_file
+read -p "Enter the formula to search: " formula_pretty
+
+/home/diegop/Documents/Pymatgen-2026/.Sec1venv/bin/python "/home/diegop/Documents/Pymatgen-2026/Sec 2 ALIGNN/formula_lookup.py" $pkl_file $formula_pretty
 
 fi
 

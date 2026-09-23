@@ -10,7 +10,8 @@ import random
 from test_device import test_device
 
 def predict_value(model, device, df, data_dir, structure_index):
-    """_summary_
+    """
+        
 
     Args:
         model (_type_): _description_

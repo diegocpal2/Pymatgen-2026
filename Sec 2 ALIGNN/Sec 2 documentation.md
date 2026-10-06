@@ -165,13 +165,13 @@ The name of the .pkl file must be entered without its corresponding extension. T
 Enter the name of the output directory:
 ```
 
-The name of the output directory that will contain the .vasp crystalline structure files, the *config.json* file, and the *id_prop.csv* file. Each .vasp file corresponds to the crystalline structure of one entry in the selected .pkl table. The *config.json* file contains the setup parameters to be used during the training. The *id_prop.csv* file contains a list of each .vasp file created inside the directory, accompanied by the numeric value of the property that the training of the model is going to be targeting. After entering the name of the directory and pressing enter, the user is presented with the following query:
+*output directory* refers to the directory that will contain the .vasp crystalline structure files, the *config.json* file, and the *id_prop.csv* file. Each .vasp file corresponds to the crystalline structure of one entry in the selected .pkl table. The *config.json* file contains the setup parameters to be used during the training. The *id_prop.csv* file contains a list of each .vasp file created inside the directory, accompanied by the numeric value of the property that the training of the model is going to be targeting. After entering the name of the directory and pressing enter, the user is presented with the following query:
 
 ```
 Enter the material property to train the model:
 ```
 
-The name of the property to be used for training must be typed **exactly** as presented in the .pkl table. Three types of files must have been created in the new directory: .vasp files named in the format *POSCAR_0.vasp* with the number increasing with each structure added, the *config.json*, and *id_prop.csv* files.
+The last query asks for the name of the property to be used for training. This property must be typed **exactly** as presented in the .pkl table. Three types of files must have been created in the new directory: .vasp files named in the format *POSCAR_0.vasp* with the number increasing with each structure added, the *config.json* file, and the *id_prop.csv* file.
 
 ## 3. Train model.
 
@@ -200,7 +200,7 @@ A batch size of 16 is recommended for local setups with 8GB graphics cards. In t
 Enter the name of the trained model directory:
 ```
 
-If the information is correct the training of the model must begin. The files stored inside the directory named on the previous step. This process can take several hours depending on the capacity of the hardware available to perform the training.
+After answering the last query the training of the model must begin. The files will be stored inside the trained model directory. This process can take several hours depending on the capabilities of the hardware available to perform the training.
 
 ## 4. Evaluate model.
 
@@ -268,16 +268,15 @@ The user must select one the entries typing its corresponding number.
 
 ### cleaning_dataset()
 
-```
-Summary: Allows erasing entries in a dataset based in an specific property and value associated with that property (hard coded).
+==Summary:== Allows erasing entries in a dataset based in an specific property and value associated with that property (hard coded).
 
-Args:
-    dataset_path (string): Path of the .pkl file containing the dataset to be modified.
+<u>**Args:**</u>
+<u>**dataset_path (string):**</u> Path of the .pkl file containing the dataset to be modified.
 
-    output_file_name (string): Name of the file to be outputed containing the modified dataset.
+<u>**output_file_name (string):**</u> Name of the file to be outputed containing the modified dataset.
 
-    output_dir (string): Directory where the modified dataset .pkl and .xlsx files are going to be saved.
-```
+<u>**output_dir (string):**</u> Directory where the modified dataset .pkl and .xlsx files are going to be saved.
+
 ## create_vasp_files.py
 
 ### create_vasp_files()

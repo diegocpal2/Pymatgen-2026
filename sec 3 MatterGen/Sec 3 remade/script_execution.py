@@ -71,11 +71,19 @@ class SectionCommands:
 
 
 if __name__ == "__main__":
-    cmd = CMD_Scripts()
-    cmd.install_torch()
-    cmd.install_pymatgen()
-    print("TORCH VERSION:")
-    print(torch.__version__)
-    cmd.uninstall_reinstall_modules()
-    cmd.clone_and_install_mattergen()
+    answer = input("This script is meant to run AFTER the user has set up " \
+    "Python3.12.0 and its virtual environment within the 'Sec 3 remade' folder. " \
+    "Enter 'y' to continue, else the process will terminate: ")
+    if answer == "y":
+        print("Process will now continue...")
+        cmd = CMD_Scripts()
+        cmd.install_torch()
+        cmd.install_pymatgen()
+        print("TORCH VERSION:")
+        print(torch.__version__)
+        cmd.uninstall_reinstall_modules()
+        cmd.clone_and_install_mattergen()
+    else:
+        print("Exiting process")
+
 

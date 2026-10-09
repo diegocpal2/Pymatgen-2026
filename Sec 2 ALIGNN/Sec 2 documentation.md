@@ -165,13 +165,13 @@ The name of the .pkl file must be entered without its corresponding extension. T
 Enter the name of the output directory:
 ```
 
-*output directory* refers to the directory that will contain the .vasp crystalline structure files, the *config.json* file, and the *id_prop.csv* file. Each .vasp file corresponds to the crystalline structure of one entry in the selected .pkl table. The *config.json* file contains the setup parameters to be used during the training. The *id_prop.csv* file contains a list of each .vasp file created inside the directory, accompanied by the numeric value of the property that the training of the model is going to be targeting. After entering the name of the directory and pressing enter, the user is presented with the following query:
+The name of the output directory that will contain the .vasp crystalline structure files, the *config.json* file, and the *id_prop.csv* file. Each .vasp file corresponds to the crystalline structure of one entry in the selected .pkl table. The *config.json* file contains the setup parameters to be used during the training. The *id_prop.csv* file contains a list of each .vasp file created inside the directory, accompanied by the numeric value of the property that the training of the model is going to be targeting. After entering the name of the directory and pressing enter, the user is presented with the following query:
 
 ```
 Enter the material property to train the model:
 ```
 
-The last query asks for the name of the property to be used for training. This property must be typed **exactly** as presented in the .pkl table. Three types of files must have been created in the new directory: .vasp files named in the format *POSCAR_0.vasp* with the number increasing with each structure added, the *config.json* file, and the *id_prop.csv* file.
+The name of the property to be used for training must be typed **exactly** as presented in the .pkl table. Three types of files must have been created in the new directory: .vasp files named in the format *POSCAR_0.vasp* with the number increasing with each structure added, the *config.json*, and *id_prop.csv* files.
 
 ## 3. Train model.
 
@@ -200,7 +200,7 @@ A batch size of 16 is recommended for local setups with 8GB graphics cards. In t
 Enter the name of the trained model directory:
 ```
 
-After answering the last query the training of the model must begin. The files will be stored inside the trained model directory. This process can take several hours depending on the capabilities of the hardware available to perform the training.
+If the information is correct the training of the model must begin. The files stored inside the directory named on the previous step. This process can take several hours depending on the capacity of the hardware available to perform the training.
 
 ## 4. Evaluate model.
 
@@ -243,22 +243,22 @@ Enter the name of the property to retrieve:
 The name of the property must be typed exactly as is presented in the .pkl table. The user is presented with a list of elements corresponding to the provided formula as the one shown below:
 
 
-
-|index|formula_pretty|band_gap|
-|-----|--------------|--------|
-|0|BaTiO3|1.6675|
-|1|BaTiO3|2.5527|
-|2|BaTiO3|2.2934|
-|3|BaTiO3|1.7261|
-|4|BaTiO3|1.7237|
-|5|BaTiO3|0.0000|
-|6|BaTiO3|0.0000|
-|7|BaTiO3|2.0811|
-|8|BaTiO3|0.4807|
-|9|BaTiO3|0.0000|
-|10|BaTiO3|0.0000|
-Select a material from the provided list (0-10).
-
+```
+formula_pretty  band_gap
+index                         
+0             BaTiO3    1.6675
+1             BaTiO3    2.5527
+2             BaTiO3    2.2934
+3             BaTiO3    1.7261
+4             BaTiO3    1.7237
+5             BaTiO3    0.0000
+6             BaTiO3    0.0000
+7             BaTiO3    2.0811
+8             BaTiO3    0.4807
+9             BaTiO3    0.0000
+10            BaTiO3    0.0000
+Select a material from the provided list (0-10):
+```
 
 The user must select one the entries typing its corresponding number.
 
@@ -268,123 +268,111 @@ The user must select one the entries typing its corresponding number.
 
 ### cleaning_dataset()
 
-==Summary:== Allows erasing entries in a dataset based in an specific property and value associated with that property (hard coded).
+<span style="color: #432ecc;">**Summary:**</span> Allows erasing entries in a dataset based in an specific property and value associated with that property (hard coded).
 
-<u>**Args:**</u>
-<u>**dataset_path (string):**</u> Path of the .pkl file containing the dataset to be modified.
+<span style="color: #432ecc;">**Args:**</span> 
 
-<u>**output_file_name (string):**</u> Name of the file to be outputed containing the modified dataset.
-
-<u>**output_dir (string):**</u> Directory where the modified dataset .pkl and .xlsx files are going to be saved.
+<u>dataset_path (string):</u> Path of the .pkl file containing the dataset to be modified.
+        
+<u>output_file_name (string):</u> Name of the file to be outputed containing the modified dataset.
+        
+<u>output_dir (string):</u> Directory where the modified dataset .pkl and .xlsx files are going to be saved.
 
 ## create_vasp_files.py
 
 ### create_vasp_files()
 
 ### formula_lookup()
-```
-Summary:
-       Creates the vasp files corresponding to a Materials Project Pandas dataframe. The dataframe must include the "structure" column.
 
-Args:
-    df (pandas_dataframe): Pandas dataframe containing the results of pulling a series of materials information form the The Materials Project site using their API (library mp_api). The dataframes must contain the "structure" column.
-        
-    dir_name (string): Name of the directory where the vasp files are going to be stored. The directory will be created within the current directory.
+<span style="color: #432ecc;">**Summary:**</span> Creates the vasp files corresponding to a Materials Project Pandas dataframe. The dataframe must include the "structure" column. 
 
-Returns
-    df: Dataframe from the argument "df" with the added column "filenames" which contains the filenames of the vasp files created for each material in the dataframe.
+<span style="color: #432ecc;">**Args:**</span>
 
-```
+<u>df (pandas_dataframe):</u> Pandas dataframe containing the results of pulling a series of materials information form the The Materials Project site using their API (library mp_api). The dataframes must contain the "structure" column.
+
+<u>dir_name (string):</u> Name of the directory where the vasp files are going to be stored. The directory will be created within the current directory.
+
+<span style="color: #432ecc;">**Returns:**</span> <u>df:</u> Dataframe from the argument "df" with the added column "filenames" which contains the filenames of the vasp files created for each material in the dataframe.
+
 ### create_csv_prop_file()
 
-```
-Summary:
-    Creates the CSV properties file in the same folder of the vasp files. This file contains two columns. The first column contains the vasp files' filenames for each structure in the dataframe. The second column contains the numerical value of the property that the model is going to be trained on. The file will have the name "id_prop.csv". The file is generated without headers which is required by the functions in "train_alignn.py".
+<span style="color: #432ecc;">**Summary:**</span> Creates the CSV properties file in the same folder of the vasp files. This files contains two columns. The first column contains the vasp files filenames for each structure in the dataframe. The second column contains the numerical value of the property that the model is going to be trained on. The file will have the name *id_prop.csv*. The file is generated without headers which is required by the functions in *train_alignn.py*.   
 
-Args:
-    df (df): Pandas dataframe, containing the results of pulling a series of materials information, form the The Materials Project site using their API (library mp_api). The dataframes must contain the "structure" column. This dataframe must also contain the "poscar_filenames" column, therefore it must be the one returned by the function create_vasp_files(df, dir_name).
+<span style="color: #432ecc;">**Args:**</span>
 
-    training_data_dir (str): Path of the directory containing the vasp files to be used for the training of the model. The CSV file "id_prop.csv" will be generated in this directory.
+<u>df (df):</u> Pandas dataframe containing the results of pulling a series of materials information form the The Materials Project site using their API (library mp_api). The dataframes must contain the "structure" column. This dataframe must also contain the "poscar_filenames" column, therefore it must be the one returned by the function *create_vasp_files*(df, dir_name).
 
-    mat_property (str): Property that the training of the model is going to be focused on.
-```
+<u>training_data_dir (str):</u> Path of the directory containing the vasp files to be used for the training of the model. The CSV file *id_prop.csv* will be generated in this directory.
+
+<u>mat_property (str):</u> Property that the training of the model is going to be focused on.
 
 ### set_config_file()
 
-```
-Summary:
-    Duplicates the config file "config.json" into the training data directory. This file can be edited to control certain training parameters.
+<span style="color: #432ecc;">**Summary:**</span> Duplicates the config file "config.json" into the training data directory. This file can be edited to control certain training parameters.
 
-Args:
-        training_data_dir (str): Path of the directory containing the vasp files to train the model. The config file "config.json" will be copied into this directory.
+<span style="color: #432ecc;">**Args:**</span>
 
-Returns:
-        str: Path to the copied config "config.json" file.
-        dict: Dictionary containing the setup parameters for the training of the model.
+<u>training_data_dir (str):</u> Path of the directory containing the vasp files to train the model. The config file *config.json* will be copied into this directory.
 
-```
+<span style="color: #432ecc;">**Returns:**</span>
+
+<u>str:</u> Path to the copied config *config.json* file.
+
+<u>dict:</u> Dictionary containing the setup parameters for the training of the model.
 
 ### clear_cache()
 
-```
-Summary:
-    Clears the filename registry in the ALIGNN library. This cache must be cleared anytime a new model is going to be trained to avoid the model being trained using previously used structures.
+<span style="color: #432ecc;">**Summary:**</span> Clears the filename registry in the ALIGNN library. This cache must be cleared anytime a new model is going to be trained to avoid the model being trained using previously used structures.
 
-Args:
-    config_path (str): Path of the directory containing the vasp files and csv properties file "id_prop.csv".
-    config (dict): Dictionary which contains the setup parameters for the training. This file will be used by the file "training_alignn.py".
+<span style="color: #432ecc;">**Args:**</span>
 
-```
+<u>config_path (str):</u> Path of the directory containing the vasp files and csv properties file *id_prop.csv*.
+
+<u>config (dict):</u> Dictionary which contains the setup parameters for the training. This file will be used by the file *training_alignn.py*.
 
 ## evaluating_model.py
 
 ### visualize_performance()
 
-```
-Summary:
-     Allows to evaluate a model's performance, generating a Mean Absolute Error (MAE) value and a graph showing the alignment of the ALIGNN-trained-model predicted values for a specific property and the reference values included in the testing part of the dataset.
+<span style="color: #432ecc;">**Summary:**</span> Allows to evaluate a model's performance, generating a Mean Absolute Error (MAE) value and a graph showing the aligning of the ALIGNN-trained-model predicted values for a specific property and the reference values included in the testing part of the dataset.
 
-Args:
-    model_dir (string): Path of the directory containing the output of a trained model using the ALIGNN library.
+<span style="color: #432ecc;">**Args:**</span>
+<u>model_dir (string):</u> Path of the directory containing the output of a trained model using the ALIGNN library.
 
-Returns:
-    ALIGNN_model: Copy of the same model that was recovered from the model_dir directory path.
-
-```
+<span style="color: #432ecc;">**Returns:**</span>
+<u>ALIGNN_model:</u> Copy of the same model that was recovered from the model_dir directory path.
 
 ### load_test_data()
 
-```
-Summary:
-    Loads a model trained with the ALIGNN library and saves a plot comparing the predicted property values by the model with the reference values present in the test dataset.
+<span style="color: #432ecc;">**Summary:**</span> Loads a model trained with the ALIGNN library and saves a plot comparing the predicted property values by the model with the reference values present in the test dataset.
 
-    Args:
-    model_dir (string): Path of the directory containing the output of a trained model using the ALIGNN library.
-```
+<span style="color: #432ecc;">**Args:**</span>
+model_dir (string): Path of the directory containing the output of a trained model using the ALIGNN library.
 
 ## formula_lookup.py
 
-```
-Summary:
-    Allows for searching a specific structure formula in a given dataset contained within a .pkl file. Presents a list of all the structures found with that formula. Creates a single .vasp file of the structure selected by the user. Creates a .txt file containing the reference value associated with the selected structure.
+<span style="color: #432ecc;">**Summary:**</span> Allows for searching a specific structure formula in a given dataset contained within a *.pkl* file. Presents a list of all the structures found with that formula. Creates a single *.vasp* file of the structure selected by the user. Creates a *.txt* file containing the reference value associated with the selected structure.
 
-Args:
-    pkl_file (string): Path of the .pkl file containing the dataset to be consulted.
-    formula_pretty (string): Formula inputted by the user to perform a formula lookup.
-    property (string): Property that is going to be consulted in the formula lookup.
+<span style="color: #432ecc;">**Args:**</span>
 
-```
+<u>pkl_file (string):</u> Path of the .pkl file containing the dataset to be consulted.
+
+<u>formula_pretty (string):</u> Formula inputted by the user to perform a formula lookup.
+
+<u>property (string):</u> Property that's going to be consulted in the formula lookup.
 
 ## predict_property_value.py
 
 ### predict_property_value()
 
-    Summary:
-        Allows for the prediction of a specific property value using a model trained using the ALIGNN library. The function shows the the reference property value and the predicted value to permit for comparison of both values.
+<span style="color: #432ecc;">**Summary:**</span> Allows for the prediction of a specific property value using a model trained using the ALIGNN library. The function shows the the reference property value and the predicted value to permit for comparison of both values.
 
-    Args:
-        model_dir (string): Path of the trained model to be consulted.
-        property_value_file (string): Path of the .txt file containing the property value.
-        vasp_file (string): Path of the structure .vasp file to allow for prediction of properties.
-        property (string): Name of the property to be used for a prediction.
+<span style="color: #432ecc;">**Args:**</span>
 
+<u>model_dir (string):</u> Path of the trained model to be consulted.
+
+<u>property_value_file (string):</u> Path of the *.txt* file containing the property value. 
+
+<u>vasp_file (string):</u> Path of the structure .vasp file to allow for prediction of properties. 
+
+<u>property (string):</u> Name of the property to be used for a prediction.

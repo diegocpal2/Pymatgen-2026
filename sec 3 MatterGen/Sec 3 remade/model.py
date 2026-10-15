@@ -11,7 +11,8 @@ sys.path.append('mattergen')
 sys.path.append('/content/mattergen')
 
 d = '/content/drive/MyDrive/TMS AI4MSE for DEMO 2025-10-28/Sec 3 MatterGen/'
-df = joblib.load(os.path.join(d, 'mp_Na_eqV2.pkl'))
+d2 = '/home/user/Documents/092326/Pymatgen-2026/sec 3 ALIGNN'
+df = joblib.load(os.path.join(d2, 'mp_Na_eqV2.pkl'))
 
 # Originally used the jupyter notebook structure, wont work here
 df.head()
